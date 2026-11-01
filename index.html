@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#a84f78">
+<title>Despensa Loli</title>
+<style>
+:root{--pink:#f6dce8;--pink2:#fff1f6;--berry:#914365;--berry2:#b65c83;--ink:#49313d;--muted:#927887;--line:#f0dce5;--bg:#fffafd;--white:#fff}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#fff6fa,#fffafd 45%,#fff);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink)}
+.app{max-width:760px;margin:auto;min-height:100vh;padding:16px}
+header{background:linear-gradient(135deg,#f8dce8,#f3c9dc);border-radius:24px;padding:22px 20px;color:var(--berry);box-shadow:0 8px 24px #a84f7818}
+.brand{display:flex;align-items:center;justify-content:space-between;gap:10px}.brand h1{font-size:clamp(27px,7vw,38px);margin:0;letter-spacing:-1px}.flower{font-size:38px}header p{margin:8px 0 0;font-size:14px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}.stat{background:#ffffffd9;border-radius:16px;padding:12px 14px}.stat b{display:block;font-size:25px}.stat span{font-size:12px;color:var(--berry)}
+main{padding:18px 2px}.panel{background:white;border:1px solid var(--line);border-radius:20px;padding:17px;margin-bottom:15px;box-shadow:0 5px 18px #713d5510}
+h2{font-size:18px;color:var(--berry);margin:0 0 13px}.field{margin:11px 0}.field label{display:block;font-size:13px;font-weight:650;margin-bottom:6px;color:#765366}
+input,select{width:100%;border:1px solid #e9d3df;background:#fffdfE;border-radius:12px;padding:12px 13px;font-size:16px;color:var(--ink);outline:none}input:focus,select:focus{border-color:var(--berry2);box-shadow:0 0 0 3px #b65c8318}
+button{border:0;border-radius:13px;padding:12px 15px;font-weight:700;font-size:14px;cursor:pointer}
+.primary{background:var(--berry2);color:white;width:100%;margin-top:8px}.secondary{background:var(--pink2);color:var(--berry)}.danger{background:#fff0f0;color:#a53f4b}.small{padding:8px 10px;font-size:12px}
+.search{position:relative}.search input{padding-left:40px}.search:before{content:"⌕";position:absolute;left:14px;top:4px;font-size:27px;color:var(--muted)}
+.product{border:1px solid var(--line);border-radius:15px;padding:13px;margin:10px 0;background:#fff}
+.producttop{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.product h3{margin:0;font-size:16px}.meta{color:var(--muted);font-size:12px;margin-top:4px}.price{font-weight:800;color:var(--berry);font-size:18px;white-space:nowrap}.actions{display:flex;gap:7px;margin-top:11px;flex-wrap:wrap}
+.empty{text-align:center;color:var(--muted);padding:20px 8px}.empty strong{display:block;font-size:30px;margin-bottom:5px}
+.note{font-size:12px;color:var(--muted);line-height:1.5}.hidden{display:none!important}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:10px 0 24px}
+@media(min-width:600px){.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}}
+</style>
+<link rel="manifest" href="manifest.webmanifest"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Despensa Loli"><meta name="theme-color" content="#a84f78">
+</head>
+<body>
+<div class="app">
+<header>
+ <div class="brand"><h1>🌷 Despensa Loli</h1><div class="flower">🛒</div></div>
+ <p>Tu cuaderno de precios, siempre a mano 💗</p>
+ <div class="stats">
+  <div class="stat"><b id="count">0</b><span>Productos guardados</span></div>
+  <div class="stat"><b id="shown">0</b><span>Resultados de búsqueda</span></div>
+ </div>
+</header>
+<main>
+ <section class="panel">
+  <h2>🔎 Buscar un precio</h2>
+  <div class="search"><input id="search" placeholder="Busca por producto, marca o tamaño..." autocomplete="off"></div>
+  <div id="results"></div>
+ </section>
+ <section class="panel" id="editor">
+  <h2 id="formTitle">🛍️ Agregar producto</h2>
+  <form id="productForm">
+   <div class="formgrid">
+    <div class="field"><label for="name">Nombre del producto *</label><input id="name" required placeholder="Ej. Aceite"></div>
+    <div class="field"><label for="brand">Marca</label><input id="brand" placeholder="Ej. Cocinero"></div>
+    <div class="field"><label for="size">Tamaño o presentación</label><input id="size" placeholder="Ej. 900 ml"></div>
+    <div class="field"><label for="category">Categoría</label><select id="category"><option>Almacén</option><option>Bebidas</option><option>Limpieza</option><option>Lácteos</option><option>Golosinas</option><option>Otros</option></select></div>
+   </div>
+   <div class="field"><label for="price">Precio en guaraníes (Gs.) *</label><input id="price" type="number" min="1" step="1" required placeholder="Ej. 12000"></div>
+   <button class="primary" id="saveBtn" type="submit">💾 Guardar producto</button>
+   <button class="secondary small hidden" id="cancelBtn" type="button" style="width:100%;margin-top:8px">Cancelar edición</button>
+  </form>
+ </section>
+ <section class="panel">
+  <h2>📋 Todos mis productos</h2>
+  <div id="allProducts"></div>
+  <p class="note">Tus productos quedan guardados en este dispositivo, incluso si cierras el navegador. No borres los datos del navegador si quieres conservarlos.</p>
+ </section>
+ <section class="panel">
+  <h2>💾 Copia de seguridad</h2>
+  <p class="note">Puedes exportar tus precios para guardarlos o pasarlos a otro teléfono.</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+   <button class="secondary" id="exportBtn">Descargar copia</button>
+   <button class="secondary" id="importBtn">Restaurar copia</button>
+   <input class="hidden" type="file" id="importFile" accept="application/json">
+  </div>
+ </section>
+</main>
+<footer>Hecho con cariño para Loli 💗</footer>
+</div>
+<script>
+const KEY='despensaLoliProducts_v1';
+let products=[];
+let editing=null;
+const $=id=>document.getElementById(id);
+const money=n=>'Gs. '+Number(n).toLocaleString('es-PY');
+function load(){try{products=JSON.parse(localStorage.getItem(KEY)||'[]');if(!Array.isArray(products))products=[]}catch(e){products=[]}}
+function persist(){localStorage.setItem(KEY,JSON.stringify(products));render()}
+function safe(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function card(p){return `<article class="product"><div class="producttop"><div><h3>${safe(p.name)}</h3><div class="meta">${safe(p.brand||'Sin marca')} · ${safe(p.size||'Sin tamaño')} · ${safe(p.category||'Otros')}</div></div><div class="price">${money(p.price)}</div></div><div class="actions"><button class="secondary small" onclick="editProduct('${p.id}')">✏️ Editar</button><button class="danger small" onclick="deleteProduct('${p.id}')">Eliminar</button></div></article>`}
+function render(){
+ const q=$('search').value.trim().toLocaleLowerCase('es');
+ const matches=products.filter(p=>(p.name+' '+p.brand+' '+p.size+' '+p.category).toLocaleLowerCase('es').includes(q));
+ $('count').textContent=products.length;$('shown').textContent=matches.length;
+ $('results').innerHTML=q?(matches.length?matches.map(card).join(''):'<div class="empty"><strong>🧺</strong>No encontré ese producto. Puedes agregarlo abajo.</div>'):'<div class="empty"><strong>💗</strong>Escribe el nombre de un producto para encontrar su precio.</div>';
+ $('allProducts').innerHTML=products.length?products.slice().sort((a,b)=>a.name.localeCompare(b.name,'es')).map(card).join(''):'<div class="empty"><strong>🌸</strong>Todavía no guardaste productos.<br>¡Agrega el primero!</div>';
+}
+$('productForm').addEventListener('submit',e=>{
+ e.preventDefault();
+ const p={id:editing||String(Date.now()),name:$('name').value.trim(),brand:$('brand').value.trim(),size:$('size').value.trim(),category:$('category').value,price:Number($('price').value)};
+ if(!p.name||!Number.isFinite(p.price)||p.price<=0)return;
+ if(editing){products=products.map(x=>x.id===editing?p:x)}else{products.push(p)}
+ resetForm();persist();
+});
+function editProduct(id){const p=products.find(x=>x.id===id);if(!p)return;editing=id;$('name').value=p.name;$('brand').value=p.brand;$('size').value=p.size;$('category').value=p.category;$('price').value=p.price;$('formTitle').textContent='✏️ Editar producto';$('saveBtn').textContent='Guardar cambios';$('cancelBtn').classList.remove('hidden');$('editor').scrollIntoView({behavior:'smooth'});}
+function deleteProduct(id){const p=products.find(x=>x.id===id);if(p&&confirm('¿Eliminar '+p.name+'?')){products=products.filter(x=>x.id!==id);persist();}}
+function resetForm(){editing=null;$('productForm').reset();$('formTitle').textContent='🛍️ Agregar producto';$('saveBtn').textContent='💾 Guardar producto';$('cancelBtn').classList.add('hidden')}
+$('cancelBtn').addEventListener('click',resetForm);$('search').addEventListener('input',render);
+$('exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(products,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='despensa-loli-copia.json';a.click();URL.revokeObjectURL(a.href)});
+$('importBtn').addEventListener('click',()=>$('importFile').click());
+$('importFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(!Array.isArray(data))throw Error();if(confirm('La copia reemplazará la lista actual. ¿Continuar?')){products=data.filter(p=>p&&p.name&&Number(p.price)>0);persist();alert('¡Copia restaurada!')}}catch(err){alert('No se pudo leer la copia.')}e.target.value=''});
+load();render();
+</script>
+<script>if ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(()=>{})); }</script>
+</body>
+</html>
